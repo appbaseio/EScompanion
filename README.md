@@ -22,12 +22,12 @@ esplugin -version 2.3 appbaseio/DejaVu mobz/elasticsearch-head
 
 Create a .env file which contains
 ```
-User=Test  # user on the server
-Server=http://Elasticsearch.local
-Port=22
-Password=neverTrustMe
+USER=Test  # user on the server
+SERVER=http://Elasticsearch.local
+PORT=22
+PASSWORD=neverTrustMe
     or
-Key="./.ssh/id_rsa"
+KEY="./.ssh/id_rsa"
 ```
 
-Then `go test` 
+Then `go test`
