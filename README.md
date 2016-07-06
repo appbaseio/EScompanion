@@ -13,7 +13,7 @@ ESplugin will revert to local system.
 go build
 
 #will install on the local system
-esplugin -version 2.3 appbaseio/DejaVu mobz/elasticsearch-head
+esplugin -version 2.3 appbaseio/dejaVu mobz/elasticsearch-head
 
 
 ```
@@ -23,7 +23,7 @@ esplugin -version 2.3 appbaseio/DejaVu mobz/elasticsearch-head
 Create a .env file which contains
 ```
 USER=Test  # user on the server
-SERVER=http://Elasticsearch.local
+SERVER=Elasticsearch.local
 PORT=22
 PASSWORD=neverTrustMe
     or
