@@ -51,12 +51,8 @@ func (remote RemoteExecutor) run(command string, args ...string) (string, error)
 func (local LocalExecutor) run(command string, args ...string) (string, error) {
 	var cmd *exec.Cmd
 
-	if len(args) > 0 {
-		cmd = exec.Command(fmt.Sprintf("%s %s", command, strings.Join(args, " ")))
-	} else {
-		cmd = exec.Command(command)
-
-	}
+	cmd = exec.Command("plugin",command,args...)
+		
 	output, err := cmd.Output()
 	if err != nil {
 		return "", err
@@ -73,9 +69,9 @@ type Manager struct {
 func DefaultCommandProvider(version string) string {
 
 	if match, _ := regexp.Match("2.+", []byte(version)); match {
-		return "/usr/share/elasticsearch/bin/plugin install"
+		return "install"
 	} else if match, _ := regexp.Match("1.7*", []byte(version)); match {
-		return "/usr/share/elasticsearch/bin/plugin --install"
+		return "--install"
 	} else {
 		panic("Invalid Version")
 	}
