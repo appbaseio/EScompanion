@@ -20,6 +20,11 @@ esplugin -version 2.3 appbaseio/dejaVu mobz/elasticsearch-head
 
 ## How to test
 
+The tests assume that the `plugin` binary is present in the location
+ `/usr/share/elasticsearch/bin` if thats not true for your server then
+ just change the command from the `testCommandProvider` function present in
+ the test file.
+
 Create a .env file which contains
 ```
 USER=Test  # user on the server
