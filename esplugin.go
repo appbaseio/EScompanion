@@ -14,6 +14,7 @@ type CommandProvider func(version string, plugin string) []string
 
 func (m *Manager) run(plugin string) (string, error) {
 	var cmd *exec.Cmd
+
 	log.Println(m.GetCommand(m.Version, plugin))
 	cmd = exec.Command("plugin", m.GetCommand(m.Version, plugin)...)
 	output, err := cmd.CombinedOutput()
