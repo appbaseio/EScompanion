@@ -73,9 +73,9 @@ type Manager struct {
 func DefaultCommandProvider(version string) string {
 
 	if match, _ := regexp.Match("2.+", []byte(version)); match {
-		return "plugin install"
+		return "/usr/share/elasticsearch/bin/plugin install"
 	} else if match, _ := regexp.Match("1.7*", []byte(version)); match {
-		return "plugin --install"
+		return "/usr/share/elasticsearch/bin/plugin --install"
 	} else {
 		panic("Invalid Version")
 	}
@@ -98,6 +98,7 @@ func (m *Manager) Install(plugins ...string) (string, error) {
 
 func main() {
 	err := godotenv.Load()
+
 	var executor Executor
 	if err != nil {
 		log.Println(".env file not found")
