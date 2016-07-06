@@ -26,19 +26,6 @@ func listPlugins() {
 
 }
 
-func TestRemoteExecutor(t *testing.T) {
-	godotenv.Load()
-	resp, err := RemoteExecutor{}.run("whoami")
-	resp = strings.TrimSpace(resp)
-	if err != nil {
-		t.Fatal(err)
-	} else {
-		if resp != "girish" {
-			t.Fatal("the server has different user : ", resp)
-		}
-	}
-}
-
 func TestLocalExecutor(t *testing.T) {
 
 	user, _ := user.Current()
