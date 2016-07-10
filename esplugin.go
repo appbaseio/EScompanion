@@ -82,7 +82,7 @@ func main() {
 		Version:    *version,
 		GetCommand: DefaultCommandProvider,
 	}
-
+	m.Install("license")
 	message, err := m.Install(plugins...)
 
 	if err != nil {
