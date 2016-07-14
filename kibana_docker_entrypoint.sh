@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 # Add kibana as command if needed
 if [[ "$1" == -* ]]; then
