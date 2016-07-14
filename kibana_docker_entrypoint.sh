@@ -14,7 +14,7 @@ if [ "$1" = 'kibana' ]; then
 
     for i in $(seq 1 "$length");
     do
-        /bin/bash kibana plugin --install ${args[$i]}
+        /bin/bash -c "kibana plugin --install ${args[$i]}"
     done
 
 	if [ "$ELASTICSEARCH_URL" ]; then
