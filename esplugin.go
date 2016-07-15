@@ -32,10 +32,15 @@ type Manager struct {
 
 func DefaultCommandProvider(version string, plugin string) []string {
 
-	if match, _ := regexp.Match("2.+", []byte(version)); match {
+	if match, _ := regexp.Match("2.2+", []byte(version)); match {
 		return []string{"install", "--batch", plugin}
-	} else if match, _ := regexp.Match("1.7*", []byte(version)); match {
-		return []string{"--install", "--batch", plugin}
+	} else if match, _ := regexp.Match("2.3+", []byte(version)); match {
+		return []string{"install", "--batch", plugin}
+
+	} else if match, _ := regexp.Match("2.+", []byte(version)); match {
+		return []string{"install", plugin}
+	} else if match, _ := regexp.Match("1.7+", []byte(version)); match {
+		return []string{"--install", plugin}
 	} else {
 		panic("Invalid Version")
 	}
