@@ -2,7 +2,9 @@ package main
 
 import (
 	"flag"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 	"regexp"
@@ -47,6 +49,21 @@ func DefaultCommandProvider(version string, plugin string) []string {
 
 }
 
+func SaveToFile(url string, path string) error {
+	res, err := http.Get(url)
+
+	if err != nil {
+		return err
+	}
+
+	file, err := ioutil.ReadAll(res.Body)
+
+	if err != nil {
+		return nil
+	}
+	return ioutil.WriteFile(path, file, 0777)
+}
+
 func (m *Manager) Install(plugins ...string) (string, error) {
 	for i := 0; i < len(plugins); i++ {
 		log.Println("Installing plugin ", plugins[i])
@@ -63,9 +80,18 @@ func (m *Manager) Install(plugins ...string) (string, error) {
 func main() {
 	err := godotenv.Load()
 
+	dePath := "./data.zip"
+	deConfigURL := "http://localhost:8000/d.zip"
 	version := flag.String("version", "2.3", "The elasticsearch version installed on the system")
+	esPath := flag.String("path", dePath, "The elasticsearch yml file location")
+	configUrl := flag.String("url", deConfigURL, "Location of the elasticsearch url")
+
 	flag.Parse()
 
+	if *configUrl != deConfigURL && *esPath != dePath {
+		log.Println("Detecting new elasticsearch yml file url ", *configUrl)
+		SaveToFile(*configUrl, *esPath)
+	}
 	plugins := flag.Args()
 
 	log.Println("Using elasticsearch version ", *version)
