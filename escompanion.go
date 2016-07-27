@@ -87,7 +87,6 @@ func main() {
 	configUrl := flag.String("url", deConfigURL, "Location of the elasticsearch url")
 
 	flag.Parse()
-
 	if *configUrl != deConfigURL && *esPath != dePath {
 		log.Println("Detecting new elasticsearch yml file url ", *configUrl)
 		SaveToFile(*configUrl, *esPath)
