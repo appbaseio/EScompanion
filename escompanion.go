@@ -61,7 +61,7 @@ func SaveToFile(url string, path string) error {
 	if err != nil {
 		return nil
 	}
-	return ioutil.WriteFile(path, file, 0777)
+	return ioutil.WriteFile(path, file, 0644)
 }
 
 func (m *Manager) Install(plugins ...string) (string, error) {
