@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"errors"
 	"flag"
 	"io/ioutil"
 	"log"
@@ -19,12 +21,14 @@ func (m *Manager) run(plugin string) (string, error) {
 
 	log.Println(m.GetCommand(m.Version, plugin))
 	cmd = exec.Command("plugin", m.GetCommand(m.Version, plugin)...)
-	output, err := cmd.CombinedOutput()
-	log.Println(string(output))
+	var stderr, stdout bytes.Buffer
+	cmd.Stderr = &stderr
+	cmd.Stdout = &stdout
+	err := cmd.Run()
 	if err != nil {
-		return "", err
+		return "", errors.New(err.Error() + ":" + stdout.String())
 	}
-	return string(output), nil
+	return stdout.String(), nil
 }
 
 type Manager struct {
@@ -49,6 +53,19 @@ func DefaultCommandProvider(version string, plugin string) []string {
 
 }
 
+func WgetFile(url string, path string) error {
+
+	cmd := exec.Command("wget", url, "-O", path)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return err
+	}
+
+	log.Println(string(output))
+
+	return err
+
+}
 func SaveToFile(url string, path string) error {
 	res, err := http.Get(url)
 
@@ -81,7 +98,7 @@ func main() {
 	err := godotenv.Load()
 
 	dePath := "./data.zip"
-	deConfigURL := "http://localhost:8000/d.zip"
+	deConfigURL := "http://localhost:3000/elasticsea.yml"
 	version := flag.String("version", "2.3", "The elasticsearch version installed on the system")
 	esPath := flag.String("path", dePath, "The elasticsearch yml file location")
 	configUrl := flag.String("url", deConfigURL, "Location of the elasticsearch url")
@@ -89,7 +106,7 @@ func main() {
 	flag.Parse()
 	if *configUrl != deConfigURL && *esPath != dePath {
 		log.Println("Detecting new elasticsearch yml file url ", *configUrl)
-		SaveToFile(*configUrl, *esPath)
+		WgetFile(*configUrl, *esPath)
 	}
 	plugins := flag.Args()
 
@@ -97,7 +114,7 @@ func main() {
 
 	if len(plugins) < 1 {
 		log.Fatalln("You havent provided any plugins")
-		os.Exit(-1)
+		os.Exit(0)
 	}
 	log.Println("The plugins being installed are ")
 	for i := 0; i < len(plugins); i++ {
