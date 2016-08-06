@@ -1,0 +1,9 @@
+cluster.name: girishramnani
+bootstrap.mlockall: true
+discovery.zen.minimum_master_nodes: 2
+discovery.zen.ping.unicast.hosts: "elasticsearch-1,elasticsearch-2,elasticsearch-3"
+network.publish_host=_ethwe: ipv4_
+network.bind_host: 0
+index.number_of_shards: 2
+index.number_of_replicas: 2
+discovery.type: zen
