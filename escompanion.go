@@ -115,19 +115,6 @@ func main() {
 
 	log.Println("Using elasticsearch version ", *version)
 
-	if len(plugins) < 1 {
-		log.Fatalln("You havent provided any plugins")
-		os.Exit(0)
-	}
-	log.Println("The plugins being installed are ")
-	for i := 0; i < len(plugins); i++ {
-		log.Println("+ ", plugins[i])
-	}
-
-	log.Println("Starting installation ..")
-
-	// Main Execution
-
 	m := &Manager{
 		Version:    *version,
 		GetCommand: DefaultCommandProvider,
@@ -145,6 +132,19 @@ func main() {
 			m.Install("elasticsearch/elasticsearch-cloud-aws/2.6.1")
 		}
 	}
+
+	if len(plugins) < 1 {
+		log.Fatalln("You havent provided any plugins")
+		os.Exit(0)
+	}
+	log.Println("The plugins being installed are ")
+	for i := 0; i < len(plugins); i++ {
+		log.Println("+ ", plugins[i])
+	}
+
+	log.Println("Starting installation ..")
+
+	// Main Execution
 
 	m.Install("license")
 
