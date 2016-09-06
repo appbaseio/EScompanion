@@ -21,7 +21,13 @@ func listPlugins() {
 
 func TestCommandProvider(t *testing.T) {
 
-	command := DefaultCommandProvider("2.3", "testing")
+	command := DefaultCommandProvider("2.4.1", "testing")
+
+	if command[1] != "--batch" {
+		t.Fatal("command doesnt match")
+	}
+
+	command = DefaultCommandProvider("2.3", "testing")
 
 	if command[1] != "--batch" {
 		t.Fatal("command doesnt match")
@@ -31,7 +37,6 @@ func TestCommandProvider(t *testing.T) {
 		t.Fatal("command doesnt match")
 	}
 	command = DefaultCommandProvider("2.1", "testing")
-	t.Log(command)
 
 	command = DefaultCommandProvider("1.7.2", "testing")
 

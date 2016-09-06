@@ -43,8 +43,12 @@ func DefaultCommandProvider(version string, plugin string) []string {
 	} else if match, _ := regexp.Match("2.3+", []byte(version)); match {
 		return []string{"install", "--batch", plugin}
 
-	} else if match, _ := regexp.Match("2.+", []byte(version)); match {
+	} else if match, _ := regexp.Match("2.1+", []byte(version)); match {
 		return []string{"install", plugin}
+	} else if match, _ := regexp.Match("2.0+", []byte(version)); match {
+		return []string{"install", plugin}
+	} else if match, _ := regexp.Match("2.+", []byte(version)); match {
+		return []string{"install", "--batch", plugin}
 	} else if match, _ := regexp.Match("1.7+", []byte(version)); match {
 		return []string{"--install", plugin}
 	} else if match, _ := regexp.Match("1.6+", []byte(version)); match {
