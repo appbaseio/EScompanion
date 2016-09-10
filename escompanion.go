@@ -102,16 +102,14 @@ func (m *Manager) Install(plugins ...string) (string, error) {
 func main() {
 	err := godotenv.Load()
 
-	dePath := "./data.zip"
-	deConfigURL := "http://localhost:3000/elasticsea.yml"
 	version := flag.String("version", "2.3", "The elasticsearch version installed on the system")
-	esPath := flag.String("path", dePath, "The elasticsearch yml file location")
-	configUrl := flag.String("url", deConfigURL, "Location of the elasticsearch url")
+	esPath := flag.String("path", "", "The elasticsearch yml file location")
+	configUrl := flag.String("url", "", "Location of the elasticsearch url")
 	backup := flag.Bool("backup", false, "Should the s3 backup plugin be installed?")
 
 	flag.Parse()
 
-	if *configUrl != deConfigURL && *esPath != dePath {
+	if *configUrl != "" && *esPath != "" {
 		log.Println("Detecting new elasticsearch yml file url ", *configUrl)
 		WgetFile(*configUrl, *esPath)
 	}
