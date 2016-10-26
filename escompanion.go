@@ -16,11 +16,20 @@ import (
 
 type CommandProvider func(version string, plugin string) []string
 
+func (m *Manager) getPluginCommand() string {
+	if match, _ := regexp.Match("5+", []byte(m.Version)); match {
+		return "elasticsearch-plugin"
+	} else {
+		return "plugin"
+	}
+
+}
+
 func (m *Manager) run(plugin string) (string, error) {
 	var cmd *exec.Cmd
 
 	log.Println(m.GetCommand(m.Version, plugin))
-	cmd = exec.Command("plugin", m.GetCommand(m.Version, plugin)...)
+	cmd = exec.Command(m.getPluginCommand(), m.GetCommand(m.Version, plugin)...)
 	var stderr, stdout bytes.Buffer
 	cmd.Stderr = &stderr
 	cmd.Stdout = &stdout
@@ -53,6 +62,8 @@ func DefaultCommandProvider(version string, plugin string) []string {
 		return []string{"--install", plugin}
 	} else if match, _ := regexp.Match("1.6+", []byte(version)); match {
 		return []string{"--install", plugin}
+	} else if match, _ := regexp.Match("5+", []byte(version)); match {
+		return []string{"install", "--batch", plugin}
 	}
 	panic("Invalid Version")
 
@@ -100,7 +111,11 @@ func (m *Manager) Install(plugins ...string) (string, error) {
 }
 
 func installAwsPlugin(version *string, m *Manager) {
-	if match, _ := regexp.Match("2.+", []byte(*version)); match {
+
+	if match, _ := regexp.Match("5+", []byte(*version)); match {
+		log.Println("Installing repository s3")
+		m.Install("repository-s3")
+	} else if match, _ := regexp.Match("2.+", []byte(*version)); match {
 		log.Println("Installing cloud-aws")
 		m.Install("cloud-aws")
 	} else if match, _ := regexp.Match("1.7+", []byte(*version)); match {
@@ -112,7 +127,10 @@ func installAwsPlugin(version *string, m *Manager) {
 	}
 }
 func installAzurePlugin(version *string, m *Manager) {
-	if match, _ := regexp.Match("2.+", []byte(*version)); match {
+	if match, _ := regexp.Match("5+", []byte(*version)); match {
+		log.Println("Installing repository azure")
+		m.Install("repository-azure")
+	} else if match, _ := regexp.Match("2.+", []byte(*version)); match {
 		log.Println("Installing cloud-azure")
 		m.Install("cloud-azure")
 	} else if match, _ := regexp.Match("1.7+", []byte(*version)); match {
