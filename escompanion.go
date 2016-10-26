@@ -16,11 +16,20 @@ import (
 
 type CommandProvider func(version string, plugin string) []string
 
+func (m *Manager) getPluginCommand() string {
+	if match, _ := regexp.Match("5+", []byte(m.Version)); match {
+		return "elasticsearch-plugin"
+	} else {
+		return "plugin"
+	}
+
+}
+
 func (m *Manager) run(plugin string) (string, error) {
 	var cmd *exec.Cmd
 
 	log.Println(m.GetCommand(m.Version, plugin))
-	cmd = exec.Command("plugin", m.GetCommand(m.Version, plugin)...)
+	cmd = exec.Command(m.getPluginCommand(), m.GetCommand(m.Version, plugin)...)
 	var stderr, stdout bytes.Buffer
 	cmd.Stderr = &stderr
 	cmd.Stdout = &stdout
@@ -53,6 +62,8 @@ func DefaultCommandProvider(version string, plugin string) []string {
 		return []string{"--install", plugin}
 	} else if match, _ := regexp.Match("1.6+", []byte(version)); match {
 		return []string{"--install", plugin}
+	} else if match, _ := regexp.Match("5+", []byte(version)); match {
+		return []string{"install", "--batch", plugin}
 	}
 	panic("Invalid Version")
 
@@ -99,19 +110,50 @@ func (m *Manager) Install(plugins ...string) (string, error) {
 	return "All plugins installed successfully", nil
 }
 
+func installAwsPlugin(version *string, m *Manager) {
+
+	if match, _ := regexp.Match("5+", []byte(*version)); match {
+		log.Println("Installing repository s3")
+		m.Install("repository-s3")
+	} else if match, _ := regexp.Match("2.+", []byte(*version)); match {
+		log.Println("Installing cloud-aws")
+		m.Install("cloud-aws")
+	} else if match, _ := regexp.Match("1.7+", []byte(*version)); match {
+		log.Println("Installing the cloud-aws/2.7.1")
+		m.Install("elasticsearch/elasticsearch-cloud-aws/2.7.1")
+	} else if match, _ := regexp.Match("1.6+", []byte(*version)); match {
+		log.Println("Installing the cloud-aws/2.6.1")
+		m.Install("elasticsearch/elasticsearch-cloud-aws/2.6.1")
+	}
+}
+func installAzurePlugin(version *string, m *Manager) {
+	if match, _ := regexp.Match("5+", []byte(*version)); match {
+		log.Println("Installing repository azure")
+		m.Install("repository-azure")
+	} else if match, _ := regexp.Match("2.+", []byte(*version)); match {
+		log.Println("Installing cloud-azure")
+		m.Install("cloud-azure")
+	} else if match, _ := regexp.Match("1.7+", []byte(*version)); match {
+		log.Println("Installing the cloud-azure/2.8.3")
+		m.Install("elasticsearch/elasticsearch-cloud-azure/2.8.3")
+	} else if match, _ := regexp.Match("1.6+", []byte(*version)); match {
+		log.Println("Installing the cloud-azure/2.7.1")
+		m.Install("elasticsearch/elasticsearch-cloud-azure/2.7.1")
+	}
+}
+
 func main() {
 	err := godotenv.Load()
 
-	dePath := "./data.zip"
-	deConfigURL := "http://localhost:3000/elasticsea.yml"
 	version := flag.String("version", "2.3", "The elasticsearch version installed on the system")
-	esPath := flag.String("path", dePath, "The elasticsearch yml file location")
-	configUrl := flag.String("url", deConfigURL, "Location of the elasticsearch url")
+	esPath := flag.String("path", "", "The elasticsearch yml file location")
+	configUrl := flag.String("url", "", "Location of the elasticsearch url")
 	backup := flag.Bool("backup", false, "Should the s3 backup plugin be installed?")
+	provider := flag.String("provider", "aws", "the remote storage provider (supported values : aws , azure )")
 
 	flag.Parse()
 
-	if *configUrl != deConfigURL && *esPath != dePath {
+	if *configUrl != "" && *esPath != "" {
 		log.Println("Detecting new elasticsearch yml file url ", *configUrl)
 		WgetFile(*configUrl, *esPath)
 	}
@@ -125,16 +167,13 @@ func main() {
 	}
 
 	if *backup {
-		if match, _ := regexp.Match("2.+", []byte(*version)); match {
-			log.Println("Installing cloud-aws")
-			m.Install("cloud-aws")
-		} else if match, _ := regexp.Match("1.7+", []byte(*version)); match {
-			log.Println("Installing the cloud-aws/2.7.1")
-			m.Install("elasticsearch/elasticsearch-cloud-aws/2.7.1")
-		} else if match, _ := regexp.Match("1.6+", []byte(*version)); match {
-			log.Println("Installing the cloud-aws/2.6.1")
-			m.Install("elasticsearch/elasticsearch-cloud-aws/2.6.1")
+		switch *provider {
+		case "aws":
+			installAwsPlugin(version, m)
+		case "azure":
+			installAzurePlugin(version, m)
 		}
+
 	}
 
 	if len(plugins) < 1 {
